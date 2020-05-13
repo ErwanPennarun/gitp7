@@ -52,7 +52,7 @@ function getLatLng() {
 
   
   google.maps.event.addListener(map, 'click', function (event) {
-
+    
     let latlng = {
       lat: event.latLng.lat(),
       lng: event.latLng.lng()
@@ -66,7 +66,7 @@ function getLatLng() {
           if (results[0].formatted_address.includes("France")) {
             let adressResult = `${results[0].address_components[0].long_name} ${results[0].address_components[1].long_name}, ${results[0].address_components[6].long_name} ${results[0].address_components[2].long_name}`
             $('#restaurant-address').val(adressResult);
-            codeAddress()
+            codeAddress(adressResult)
 
           } else {
             $('#restaurant-address').val(results[0].formatted_address)
@@ -86,22 +86,7 @@ function getLatLng() {
 
 }
 
-function codeAddress() {
-  geocoder = new google.maps.Geocoder();
-  let addressVal = $('#restaurant-address').val();
-  geocoder.geocode({
-    'address': addressVal
-  }, function (results, status) {
-    if (status == google.maps.GeocoderStatus.OK) {
-      lat = results[0].geometry.location.lat();
-      console.log(lat)
-      long = results[0].geometry.location.lng();
-    } else {
-      alert("Geocode was not successful for the following reason: " + status);
-    }
 
-  });
-}
 
 
 

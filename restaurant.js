@@ -36,7 +36,7 @@ function deleteMarkers() {
 }
 
 
-function updateModal(json, i) {
+function updateModal(data, i) {
 
     $('.submitcomment').unbind('click').bind('click', function () {
         let note = JSON.parse($('#note-avis').val());
@@ -45,61 +45,101 @@ function updateModal(json, i) {
             stars: note,
             comment: comment
         }
-        json[i].ratings.splice(0, 0, newRating)
+        data[i].ratings.splice(0, 0, newRating)
         console.log(restaurants)
-        $('#modalComment').html(`${getComments(json[i].ratings)}<hr />`)
-        $('.stars-front').css("width", transformStars(json, i));
-        showRestaurants(json)
+        $('#modalComment').html(`${getComments(data[i].ratings)}<hr />`)
+        $('.stars-front').css("width", transformStars(data, i));
+        showRestaurants(data)
 
     })
 }
 
-function addNewRestaurant(json) {
+// function codeAddress(addressVal, callback) {
+//     geocoder = new google.maps.Geocoder();
+//     // let addressVal = $('#restaurant-address').val();
+//     geocoder.geocode({
+//         'address': addressVal
+//     }, function (results, status) {
+//         if (status == google.maps.GeocoderStatus.OK) {
+//             lat = results[0].geometry.location.lat();
+//             console.log(lat)
+//             long = results[0].geometry.location.lng();
+//             callback(lat, long)
+//         } else {
+//             alert("Geocode was not successful for the following reason: " + status);
+//         }
+
+//     });
+// }
+
+function codeAddress(addressVal) {
+    geocoder = new google.maps.Geocoder();
+    // let addressVal = $('#restaurant-address').val();
+    return new Promise(function(resolve, reject) {
+        geocoder.geocode({
+        'address': addressVal
+    }, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            resolve(lat = results[0].geometry.location.lat(),
+            long = results[0].geometry.location.lng());
+            
+        } else {
+            reject(new Error("Geocode was not successful for the following reason: " + status))
+        }
+    })
+    });
+}
+
+
+
+function addNewRestaurant(data) {
     let name = $('#restaurant-name').val();
     let address = $('#restaurant-address').val()
-    getLatLng()
-    codeAddress()
-    setTimeout(function () {let newRestaurant = {
-        restaurantName: name,
-        address: address,
-        lat: lat,
-        long: long,
-        prices: "",
-        ratings: []
-    }
-    console.log(newRestaurant)
-    json.push(newRestaurant)
-    showRestaurants(restaurants)}, 500)
+    codeAddress(address).then(function () {
+        let newRestaurant = {
+            restaurantName: name,
+            address: address,
+            lat: lat,
+            long: long,
+            prices: "",
+            ratings: []
+        }
+        console.log(newRestaurant)
+        data.push(newRestaurant)
+        showRestaurants(restaurants)
+
+    })
+
     console.log(restaurants)
 
 }
 
 
-function showModal(json, i) {
+function showModal(data, i) {
 
-    $('#modalTitle').html(`${json[i].restaurantName}`);
-    $('.stars-front').css("width", transformStars(json, i));
-    $('#modalComment').html(`${getComments(json[i].ratings)}<hr />`)
-    $('#modalImage').html(`<img src="${getImage(json, i)}" class="img-resto-modal">`)
-    updateModal(json, i)
+    $('#modalTitle').html(`${data[i].restaurantName}`);
+    $('.stars-front').css("width", transformStars(data, i));
+    $('#modalComment').html(`${getComments(data[i].ratings)}<hr />`)
+    $('#modalImage').html(`<img src="${getImage(data, i)}" class="img-resto-modal">`)
+    updateModal(data, i)
 
 }
 
 
 
 
-function createMarkers(json) {
-    for (let i = 0; i < json.length; i++) {
-        let myLatLng = new google.maps.LatLng(json[i].lat, json[i].long);
+function createMarkers(data) {
+    for (let i = 0; i < data.length; i++) {
+        let myLatLng = new google.maps.LatLng(data[i].lat, data[i].long);
 
         let marker = new google.maps.Marker({
             position: myLatLng,
             map: map,
-            title: json[i].restaurantName
+            title: data[i].restaurantName
         });
 
         marker.addListener('click', function () {
-            showModal(json, i)
+            showModal(data, i)
             $('#restoModal').modal('show')
         })
         markers.push(marker)
@@ -107,7 +147,7 @@ function createMarkers(json) {
     }
 }
 
-function filterRestaurants(json) {
+function filterRestaurants(data) {
 
     function changeNote() {
         let min = $("#slider-range").slider("values", 0)
@@ -115,9 +155,9 @@ function filterRestaurants(json) {
         let v = 0;
         let restaurantsFilter = [];
 
-        for (let i = 0; i < json.length; i++) {
-            if (min <= getAverage(json[i].ratings) && getAverage(json[i].ratings) <= max) {
-                restaurantsFilter[v] = json[i];
+        for (let i = 0; i < data.length; i++) {
+            if (min <= getAverage(data[i].ratings) && getAverage(data[i].ratings) <= max) {
+                restaurantsFilter[v] = data[i];
                 v = v + 1
             }
 
@@ -168,9 +208,9 @@ function getAverage(data) {
     return rounded = +(avg.toFixed(1))
 }
 
-function transformStars(json, i) {
+function transformStars(data, i) {
 
-    let ratings = getAverage(json[i].ratings);
+    let ratings = getAverage(data[i].ratings);
     let percentage = (ratings / 5) * 100;
     let percentageRounded = `${(Math.round(percentage / 10) * 10)}%`;
     console.log(percentageRounded)
@@ -179,29 +219,30 @@ function transformStars(json, i) {
 
 
 
-function showRestaurants(json) {
-    console.log(json)
+function showRestaurants(data) {
+    console.log(data)
     $("#zone-resto").html('')
 
-    for (let i = 0; i < json.length; i++) {
-        createMarkers(json)
-        let average = getAverage(json[i].ratings)
-        if (isNaN(average)) { average = "Non noté"}
+    for (let i = 0; i < data.length; i++) {
+        createMarkers(data)
+        let average = getAverage(data[i].ratings)
+        if (isNaN(average)) {
+            average = "Non noté"
+        }
 
 
         $('#zone-resto').append(`<a class="link-resto"><div id="${i}" class="resto-specs"></div></a>`)
         $(".resto-specs#" + i + "").html(`
         <div class="flex-column">
         <button class="btn-note avg-${Math.floor(average)}">${average}</button>
-        <h3 class="title">${json[i].restaurantName}</h3>
-        <p class="adress">${json[i].address}</p></div>
-        <div class="flex-row"><img src="${getImage(json, i)}" class="img-resto"></div>`)
+        <h3 class="title">${data[i].restaurantName}</h3>
+        <p class="adress">${data[i].address}</p></div>
+        <div class="flex-row"><img src="${getImage(data, i)}" class="img-resto"></div>`)
 
         $(`.resto-specs#${i}`).click(function () {
-            showModal(json, i)
+            showModal(data, i)
             $('#restoModal').modal('show')
         })
 
     }
 }
-

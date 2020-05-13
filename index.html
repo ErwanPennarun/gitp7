@@ -141,8 +141,8 @@
           <p class="help">Vous pouvez également cliquer sur la carte pour obtenir l'adresse</p>
         </div>
         <div class="has-text-centered" style="margin-top:20px">
-          <a href="#submitRestaurant" id="submit-restaurant" value="Reset input" class="button is-danger is-outlined"
-            onclick="addNewRestaurant(restaurants); $('.bloc-resto').fadeIn(); $('.add-restaurant').fadeOut(); $('#submitRestaurant')[0].reset()">Ajouter
+          <a href="#submitRestaurant" id="submit-restaurant" value="Reset input"
+            class="button is-danger is-outlined">Ajouter
             un restaurant</a>
         </div>
 
@@ -156,24 +156,33 @@
 
 </body>
 
-<script>$(function () {
-   $("#slider-range").slider({
-        range: true,
-        min: 0,
-        max: 5,
-        values: [0, 5],
-        slide: function (event, ui) {
-          $("#amount").val(ui.values[0] + " - " + ui.values[1]);
-        }
-      });
-      $("#amount").val($("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider(
-        "values", 1));
-  showRestaurants(restaurants)
-  filterRestaurants(restaurants)
-  console.log(restaurants)
-  
+<script>
+  $(function () {
 
-})</script>
+    $('#submit-restaurant').on('click', function () {
+      addNewRestaurant(restaurants);
+      $('.bloc-resto').fadeIn();
+      $('.add-restaurant').fadeOut();
+      $('#submitRestaurant')[0].reset()
+    })
+    $("#slider-range").slider({
+      range: true,
+      min: 0,
+      max: 5,
+      values: [0, 5],
+      slide: function (event, ui) {
+        $("#amount").val(ui.values[0] + " - " + ui.values[1]);
+      }
+    });
+    $("#amount").val($("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider(
+      "values", 1));
+    showRestaurants(restaurants)
+    filterRestaurants(restaurants)
+    console.log(restaurants)
+
+
+  })
+</script>
 
 </html>
 
