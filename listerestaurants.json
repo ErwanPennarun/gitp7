@@ -1,0 +1,81 @@
+[
+    {
+    "restaurantName": "Brasserie le Carré",
+    "address": "26 Quai de la Douane, 29200 Brest",
+    "lat": 48.382821,
+    "long":  -4.484873,
+    "prices": 3,
+    "ratings": [{
+            "stars": 4,
+            "comment": "Endroit chaleureux et conviviale. Personnel jeune et dynamique. Bons moments en famille et entre amis"
+        },
+        {
+            "stars": 2,
+            "comment": "Le restaurant est plutôt bien placé sur le port, de la place pour se garer. Le personnel est accueillant et les plats sont excellents et bien proportionnés, La déco du restaurant est de style moderne et cosy.Le seul bémol,quand le restaurant se rempli les serveurs privilégient la rapidité à la qualité du service,  même si celui reste tout de même correct."
+        }
+    ]
+},
+ {
+    "restaurantName": "Le Coup de Fourchette",
+    "address": "21 rue de Lyon, 29200 Brest",
+    "lat": 48.388168,
+    "long": -4.487132,
+    "prices": 2,
+    "ratings": [{
+            "stars": 4,
+            "comment": "Un petit restaurant en apparence mais de très bon plats. Petit bémol sur les desserts et notamment la tarte citron revisité qui n'en est pas vraiment une selon moi. "
+        },
+        {
+            "stars": 4,
+            "comment": "Très bonne adresse. Du fait maison : un régal. Un accueil et service parfaits. Très bon  rapport qualité/ prix. Je recommande. Et nous reviendrons."
+        }
+    ]
+}, {
+    "restaurantName": "L'Escale",
+    "address": "9 Quai de la douane, 29200 Brest",
+    "lat": 48.391793,
+    "long": -4.485837,
+    "prices": 2,
+    "ratings": [{
+            "stars": 1,
+            "comment": "A fuir ! Un jour Ils ont perdu ma commande, aujourd'hui il m'ont rempli mon tacos de Kebab alors que j'ai demandé des Tenders !"
+        },
+        {
+            "stars": 5,
+            "comment": "Meilleur Kebab de Brest. Ils sont très sympa. Ils reconnaissent les habitués. Même s'ils sont occupés toujours un 'au revoir Merci!'"
+        }
+    ]
+}, {
+    "restaurantName": "Le Crabe Marteau",
+    "address": "8 Place de la Liberté, 29200 Brest",
+    "lat": 48.381862,
+    "long": -4.487525,
+    "prices": 1,
+    "ratings": [{
+            "stars": 1,
+            "comment": "Bof! Qualité très, très médiocre ( araignée pas cuite récemment), quantité insuffisante et prix beaucoup trop cher pour l'ensemble."
+
+        },
+        {
+            "stars": 4,
+            "comment": "J'ai  adorer le concept, l ambiance générale est très appréciable, les produits sont frais, bons, goûteux. "
+        }
+
+    ]
+}, {
+    "restaurantName": "Le Tonkinois",
+    "address": "47 rue Traverse, 29200 Brest",
+    "lat": 48.386673,
+    "long": -4.4918825,
+    "prices": 2,
+    "ratings": [{
+            "stars": 4,
+            "comment": "Trop bon ration qualité/tarifs. Des plats copieux ou l'on a envie de saucer, j'enlève une étoile pour la taille de la salle, car elle est un petite!"
+        },
+        {
+            "stars": 5,
+            "comment": "Très bon restaurant ! Les entrées et les plats sont très copieux, équilibrés, et bien cuits ! Petit bémol le service est un peu long, mais au moins pas de déception quand le repas arrive !"
+        }
+    ]
+}
+]
