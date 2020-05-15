@@ -17,7 +17,8 @@ ajaxGet("listerestaurants.json", function (response) {
 });
 
 function setMapOnAll(map) {
-    for (var i = 0; i < markers.length; i++) {
+    
+    for (let i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
     }
 }
@@ -26,9 +27,6 @@ function clearMarkers() {
     setMapOnAll(null);
 }
 
-function showMarkers() {
-    setMapOnAll(map);
-}
 
 function deleteMarkers() {
     clearMarkers();
@@ -75,18 +73,18 @@ function updateModal(data, i) {
 function codeAddress(addressVal) {
     geocoder = new google.maps.Geocoder();
     // let addressVal = $('#restaurant-address').val();
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         geocoder.geocode({
-        'address': addressVal
-    }, function (results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            resolve(lat = results[0].geometry.location.lat(),
-            long = results[0].geometry.location.lng());
-            
-        } else {
-            reject(new Error("Geocode was not successful for the following reason: " + status))
-        }
-    })
+            'address': addressVal
+        }, function (results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                resolve(lat = results[0].geometry.location.lat(),
+                    long = results[0].geometry.location.lng());
+
+            } else {
+                reject(new Error("Geocode was not successful for the following reason: " + status))
+            }
+        })
     });
 }
 
@@ -129,12 +127,15 @@ function showModal(data, i) {
 
 
 function createMarkers(data) {
+
     for (let i = 0; i < data.length; i++) {
         let myLatLng = new google.maps.LatLng(data[i].lat, data[i].long);
 
         let marker = new google.maps.Marker({
             position: myLatLng,
+            animation: google.maps.Animation.DROP,
             map: map,
+            visible: true,
             title: data[i].restaurantName
         });
 
