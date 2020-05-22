@@ -11,7 +11,11 @@ body {
 .bloc-resto {
 
   flex-direction: column;
-  position: relative;
+  position: fixed;
+  overflow-y: scroll;
+  right: 0;
+  top: 40px;
+  bottom: 0;
   width: 30%;
   margin-left: 20px;
 }
@@ -27,7 +31,7 @@ body {
 
 .bloc-map {
 
-  min-height: 100vh;
+  height: 96vh;
   width: 70%;
 
 }
@@ -51,19 +55,26 @@ body {
   margin-top: 20px;
 }
 
+
 .top-bar {
   display: flex;
   flex-direction: row;
+  position: relative;
+  justify-content: center;
   background-color: red;
   color: white;
   width: 100%;
-  height: auto;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-right: 0px;
-  padding-left: 0px;
-  margin-right: 0px;
-  justify-content: center
+  height: 4vh;
+}
+
+.title-resto {
+  text-align: center;
+  align-self: center;
+  position: absolute;
+}
+
+.btn-add {
+  margin-left:  auto;
 }
 
 .resto-specs {

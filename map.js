@@ -1,4 +1,5 @@
-var map, infoWindow, service, bounds
+var map, infoWindow, service, bounds, service
+
 
 function initMap() {
   let mapStyles = [{
@@ -219,10 +220,10 @@ function initMap() {
 
   geocoder = new google.maps.Geocoder;
   infoWindow = new google.maps.InfoWindow;
+  service = new google.maps.places.PlacesService(map);
+
 
   google.maps.event.addListener(map, 'idle', function () {
-    console.log(map.getBounds());
-    let service = new google.maps.places.PlacesService(map);
     let bounds = map.getBounds();
 
     var request = {
@@ -231,7 +232,6 @@ function initMap() {
     };
 
     service.nearbySearch(request, retour);
-    clearMarkers()
   });
 
   if (navigator.geolocation) {
@@ -252,36 +252,44 @@ function initMap() {
   }
 }
 
-
-// REPENSER LA FONCTION CREATEMARKERS 
-
 function retour(results, status) {
-  if (status == google.maps.places.PlacesServiceStatus.OK) {
-    // createMarkers(results)
-
-    for (let i = 0; i < results.length; i++) {
-      console.log(results[2])
-      let LatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
-      let icone = {
-        url: 'img/location-pin.png',
-        size: new google.maps.Size(71, 71),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(17, 34),
-        scaledSize: new google.maps.Size(35, 35)
-      };
-      let markerss = new google.maps.Marker({
-        position: LatLng,
-        animation: google.maps.Animation.DROP,
-        map: map,
-        icon: icone,
-        visible: true,
-        title: results[i].name
-      });
-      markers.push(markerss)
-
-    }
+  restaurants.length = 0;
+  if (status === google.maps.places.PlacesServiceStatus.OK) {
+    deleteMarkers()
+    results.forEach(createMarker);
+    console.log(results)
+    results.forEach(function (e) {
+      restaurants.push(e)
+    })
+    showRestaurants(restaurants)
   }
+
 }
+
+function createMarker(place) {
+
+  var placeLoc = place.geometry.location
+
+  var marker = new google.maps.Marker({
+    map: map,
+    icon: {
+      url: 'http://maps.gstatic.com/mapfiles/circle.png',
+      anchor: new google.maps.Point(10, 10),
+      scaledSize: new google.maps.Size(17, 31)
+    },
+    position: placeLoc,
+    title: place.name
+  });
+  markers.push(marker)
+  marker.addListener('click', function () {
+    let request = {
+      placeId: place.place_id
+    };
+    service.getDetails(request, getReviews)
+
+  })
+}
+
 
 // Try HTML5 geolocation.
 

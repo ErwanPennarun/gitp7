@@ -32,7 +32,11 @@
 </head>
 
 <body>
-  <div class="top-bar"><span>Restaurants</span></div>
+  <div class="top-bar"><span class="is-center title-resto">Restaurants</span>
+      <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
+        onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
+    </div>
+  </div>
 
 
   <div class="bloc-body">
@@ -45,10 +49,7 @@
 
       <div id="slider-range" class="slider" aria-hidden="true"></div>
       <p id="zone-resto"></p>
-      <div class="has-text-centered" style="margin-top:20px">
-        <a href="#submitRestaurant" class="button is-danger is-center" id="add-resto"
-          onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
-      </div>
+
 
 
 
@@ -61,6 +62,8 @@
       <div id="restoModal" class="modal">
         <h3 id="modalTitle" class="modal-title"></h3>
         <hr />
+        <div class="modal-image" id="modalImage"></div>
+        <hr />
         <div class="modal-body" id="modalText">
           <div class="modal-moyenne" id="modalMoyenne"><span>Moyenne des évaluations</span> :
             <div class="stars-back">
@@ -70,7 +73,6 @@
           <hr />
         </div>
         <div class="modal-comment" id="modalComment"></div>
-        <div class="modal-image" id="modalImage"></div>
         <div class="buttons is-right">
           <a href='#' class="button is-danger" rel="modal:close" id="close-modal">Fermer</a>
           <a href='#ajout-commentaire' class="button is-success" rel="modal:open">Ajouter un avis</a>
@@ -179,9 +181,8 @@
     });
     $("#amount").val($("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider(
       "values", 1));
-    showRestaurants(restaurants)
+    // showRestaurants(restaurants)
     filterRestaurants(restaurants)
-    console.log(restaurants)
 
 
   })
