@@ -231,7 +231,7 @@ function initMap() {
       type: ['restaurant']
     };
 
-    service.nearbySearch(request, retour);
+    service.nearbySearch(request, restaurantToArray);
   });
 
   if (navigator.geolocation) {
@@ -252,24 +252,87 @@ function initMap() {
   }
 }
 
-function retour(results, status) {
-  restaurants.length = 0;
-  if (status === google.maps.places.PlacesServiceStatus.OK) {
-    deleteMarkers()
-    results.forEach(createMarker);
-    console.log(results)
-    results.forEach(function (e) {
-      restaurants.push(e)
-    })
-    showRestaurants(restaurants)
-  }
+// function retour(results, status) {
+//   if (status === google.maps.places.PlacesServiceStatus.OK) {
+//     restaurants.length = 0;
+//     deleteMarkers()
+//     for (let i = 0; i < results.length; i++) {
+//       createMarker
+//       let request = {
+//         placeId: results[i].place_id,
+//         fields: ['name', 'reviews', 'photos', 'rating', 'user_ratings_total', 'vicinity', 'geometry']
+//       }
+//       service.getDetails(request, function (place, status) {
+//         if (status === google.maps.places.PlacesServiceStatus.OK) {
+//           restaurants.push(place)
+//           console.log(restaurants)
+//           showRestaurants(restaurants)
+//         }
+//       })
+//     }
+//   }
+// }
 
-}
+// function retour(results, status) {
+//   restaurants.length = 0;
+//   if (status === google.maps.places.PlacesServiceStatus.OK) {
+//     deleteMarkers()
+//     results.forEach(createMarker);
+//     console.log(results)
+//     results.forEach(function (e) {
+//       restaurants.push(e)
+//     })
+//     showRestaurants(restaurants)
+//   }
+
+// }
+
+
+
+function restaurantToArray(results, status) {
+  if (status === google.maps.places.PlacesServiceStatus.OK) {
+    for (let i = 0; i < 10; i++) {
+      console.log(results)
+      let newRestaurant = {};
+      newRestaurant.name = results[i].name;
+      newRestaurant.photo = results[i].photos[0].getUrl();
+      newRestaurant.rating = results[i].rating;
+      newRestaurant.vicinity = results[i].vicinity;
+      newRestaurant.lat = results[i].geometry.location.lat();
+      newRestaurant.long = results[i].geometry.location.lng();
+      newRestaurant.reviews = [];
+
+      let request = {
+        placeId: results[i].place_id,
+        fields: ['reviews']
+      }
+
+      service.getDetails(request, function (place, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          var reviews = place.reviews
+          for (let i=0; i<reviews.length; i++) {
+            var review = {}
+            review.stars = reviews[i].rating
+            review.comment = reviews[i].text
+            newRestaurant.reviews.push(review)
+          }
+          restaurants.push(newRestaurant)
+          console.log(restaurants)
+          showRestaurants(restaurants)
+        }
+
+      })
+    }
+  }}
+
+
+
+
+
 
 function createMarker(place) {
 
-  var placeLoc = place.geometry.location
-
+  let latLng = new google.maps.LatLng(place.lat, place.long)
   var marker = new google.maps.Marker({
     map: map,
     icon: {
@@ -277,16 +340,17 @@ function createMarker(place) {
       anchor: new google.maps.Point(10, 10),
       scaledSize: new google.maps.Size(17, 31)
     },
-    position: placeLoc,
+    position: latLng,
     title: place.name
   });
   markers.push(marker)
   marker.addListener('click', function () {
-    let request = {
-      placeId: place.place_id
-    };
-    service.getDetails(request, getReviews)
-
+    // let request = {
+    //   placeId: place.place_id,
+    //   fields: ['name', 'reviews', 'photos', 'rating', 'user_ratings_total', 'vicinity']
+    // };
+    // service.getDetails(request, getReviews)
+    showModal(restaurants, i)
   })
 }
 

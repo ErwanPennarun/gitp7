@@ -11,11 +11,11 @@ let avisTotaux = []
 let newRestaurant = {};
 let lat
 let long
+let restobje = new Array()
 
-
-ajaxGet("listerestaurants.json", function (response) {
-    restaurants = JSON.parse(response);
-});
+// ajaxGet("listerestaurants.json", function (response) {
+//     restaurants = JSON.parse(response);
+// });
 
 function setMapOnAll(map) {
     for (let i = 0; i < markers.length; i++) {
@@ -111,12 +111,12 @@ function updateModal(data, i) {
     })
 }
 
-function showModal(data) {
+function showModal(data, i) {
 
-    $('#modalTitle').html(`${data.name}`);
-    $('.stars-front').css("width", transformStars(data));
-    $('#modalComment').html(`${getComments(arrReviews)}<hr />`)
-    $('#modalImage').html(`<img src="${image}" class="img-resto-modal">`)
+    $('#modalTitle').html(`${data[i].name}`);
+    $('.stars-front').css("width", transformStars(data, i));
+    $('#modalComment').html(`${getComments(data[i].reviews)}<hr />`)
+    $('#modalImage').html(`<img src="${data[i].photo}" class="img-resto-modal">`)
     updateModal(data)
 
 }
@@ -199,7 +199,7 @@ function getComments(data) {
     let avis = ""
 
     for (let i = 0; i < data.length; i++) {
-        avisArray.push(`${data[i].rating} - ${data[i].text}<br /><hr />`)
+        avisArray.push(`${data[i].stars} - ${data[i].comment}<br /><hr />`)
         avis = avisArray.join("")
     }
 
@@ -216,12 +216,13 @@ function getAverage(data) {
     return rounded = +(avg.toFixed(1))
 }
 
-function transformStars(data) {
+function transformStars(data, i) {
 
-    let ratings = data.rating;
+    let ratings = data[i].rating;
     // let ratings = getAverage(data[i].ratings);
     let percentage = (ratings / 5) * 100;
     let percentageRounded = `${(Math.round(percentage / 10) * 10)}%`;
+    console.log(percentageRounded)
     return percentageRounded
 }
 
@@ -234,11 +235,10 @@ function showRestaurants(data) {
     for (let i = 0; i < data.length; i++) {
 
         let average = data[i].rating
-        console.log(data[i].rating)
         // if (isNaN(average)) {
         //     average = "Non noté"
         // }
-        let image = data[i].photos[0].getUrl()
+        let image = data[i].photo
         $('#zone-resto').append(`<a class="link-resto"><div id="${i}" class="resto-specs"></div></a>`)
         $(".resto-specs#" + i + "").html(`
         <div class="flex-column">
@@ -248,30 +248,37 @@ function showRestaurants(data) {
         <div class="flex-row"><img src="${image}" class="img-resto"></div>`)
 
         $(`.resto-specs#${i}`).click(function () {
-            let request = {
-                placeId: data[i].place_id
-            };
-            service.getDetails(request, getReviews)
+            showModal(data, i);
+            $('#restoModal').modal('show')
+
+
 
         })
     }
 }
 
-function getReviews(place, status) {
-    arrReviews.length = 0
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
+// function getReviews(place, status) {
+//     arrReviews.length = 0
+//     if (status === google.maps.places.PlacesServiceStatus.OK) {
 
-        reviews = place.reviews
-       
-        image = place.photos[0].getUrl()
-        reviews.forEach(function (e) {
-            arrReviews.push(e)
-        })
-        console.log(restaurants)
-        console.log(arrReviews)
-        showModal(place)
-        $('#restoModal').modal('show')
-    }
+//         reviews = place.reviews
+//         image = place.photos[0].getUrl()
+        
+//         for (let [key, value] of Object.entries(place)) {
+//             console.log(`${key}: ${value}`)
+//         }
+        
+//         reviews.forEach(function (e) {
+//             arrReviews.push(e)
+//         })
+//         // let restobj = Object.keys(place).map(key => place[key])
+
+//         // console.log(restobj)
+//         console.log(arrReviews)
+//         showModal(place)
+//         $('#restoModal').modal('show')
+//     }
 
 
-}
+
+// }

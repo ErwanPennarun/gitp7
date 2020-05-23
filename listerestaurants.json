@@ -1,7 +1,7 @@
 [
     {
-    "restaurantName": "Brasserie le Carré",
-    "address": "26 Quai de la Douane, 29200 Brest",
+    "name": "Brasserie le Carré",
+    "vicinity": "26 Quai de la Douane, 29200 Brest",
     "lat": 48.382821,
     "long":  -4.484873,
     "prices": 3,
@@ -16,8 +16,8 @@
     ]
 },
  {
-    "restaurantName": "Le Coup de Fourchette",
-    "address": "21 rue de Lyon, 29200 Brest",
+    "name": "Le Coup de Fourchette",
+    "vicinity": "21 rue de Lyon, 29200 Brest",
     "lat": 48.388168,
     "long": -4.487132,
     "prices": 2,
@@ -31,8 +31,8 @@
         }
     ]
 }, {
-    "restaurantName": "L'Escale",
-    "address": "9 Quai de la douane, 29200 Brest",
+    "name": "L'Escale",
+    "vicinity": "9 Quai de la douane, 29200 Brest",
     "lat": 48.391793,
     "long": -4.485837,
     "prices": 2,
@@ -46,8 +46,8 @@
         }
     ]
 }, {
-    "restaurantName": "Le Crabe Marteau",
-    "address": "8 Place de la Liberté, 29200 Brest",
+    "name": "Le Crabe Marteau",
+    "vicinity": "8 Place de la Liberté, 29200 Brest",
     "lat": 48.381862,
     "long": -4.487525,
     "prices": 1,
@@ -63,8 +63,8 @@
 
     ]
 }, {
-    "restaurantName": "Le Tonkinois",
-    "address": "47 rue Traverse, 29200 Brest",
+    "name": "Le Tonkinois",
+    "vicinity": "47 rue Traverse, 29200 Brest",
     "lat": 48.386673,
     "long": -4.4918825,
     "prices": 2,
