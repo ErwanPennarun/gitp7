@@ -182,10 +182,23 @@ function changeNote() {
     var data = restaurants
     let min = $("#slider-range").slider("values", 0)
     let max = $("#slider-range").slider("values", 1)
-    let v = 0;
-    let restaurantsFilter = [];
+
+
     deleteMarkers()
 
+    let filteredRestaurants = filterRestaurants(data, min, max)
+
+    console.log('restaurants filtrés', filteredRestaurants)
+    showRestaurants(filteredRestaurants)
+}
+
+
+
+
+function filterRestaurants(data, min, max) {
+
+    let restaurantsFilter = [];
+    let v = 0;
 
     for (let i = 0; i < data.length; i++) {
         if (min <= data[i].rating && data[i].rating <= max) {
@@ -194,16 +207,8 @@ function changeNote() {
         }
     }
 
-    console.log('restaurants filtrés', restaurantsFilter)
-    showRestaurants(restaurantsFilter)
-}
+    return restaurantsFilter
 
-
-
-
-function filterRestaurants(data) {
-
-    console.log('filter restaurant')
 }
 
 // function getImage(data) {
