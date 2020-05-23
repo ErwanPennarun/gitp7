@@ -177,6 +177,9 @@ function createMarker(data) {
 }
 
 function filterRestaurants(data) {
+
+    console.log('filter restaurant')
+
     function changeNote() {
         let min = $("#slider-range").slider("values", 0)
         let max = $("#slider-range").slider("values", 1)
@@ -283,9 +286,6 @@ function showRestaurants(data) {
         $(`.resto-specs#${i}`).click(function () {
             showModal(data, i);
             $('#restoModal').modal('show')
-
-
-
         })
     }
 }

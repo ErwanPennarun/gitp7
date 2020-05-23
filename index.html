@@ -33,9 +33,9 @@
 
 <body>
   <div class="top-bar"><span class="is-center title-resto">Restaurants</span>
-      <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
-        onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
-    </div>
+    <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
+      onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
+  </div>
   </div>
 
 
@@ -170,6 +170,7 @@
       $('.add-restaurant').fadeOut();
       $('#submitRestaurant')[0].reset()
     })
+
     $("#slider-range").slider({
       range: true,
       min: 0,
@@ -179,11 +180,12 @@
         $("#amount").val(ui.values[0] + " - " + ui.values[1]);
       }
     });
+
     $("#amount").val($("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider(
       "values", 1));
+
     // showRestaurants(restaurants)
     filterRestaurants(restaurants)
-
 
   })
 </script>
