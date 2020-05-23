@@ -176,32 +176,34 @@ function createMarker(data) {
     }
 }
 
+function changeNote() {
+    console.log('change note')
+
+    var data = restaurants
+    let min = $("#slider-range").slider("values", 0)
+    let max = $("#slider-range").slider("values", 1)
+    let v = 0;
+    let restaurantsFilter = [];
+    deleteMarkers()
+
+
+    for (let i = 0; i < data.length; i++) {
+        if (min <= data[i].rating && data[i].rating <= max) {
+            restaurantsFilter[v] = data[i];
+            v = v + 1
+        }
+    }
+
+    console.log('restaurants filtrés', restaurantsFilter)
+    showRestaurants(restaurantsFilter)
+}
+
+
+
+
 function filterRestaurants(data) {
 
     console.log('filter restaurant')
-
-    function changeNote() {
-        let min = $("#slider-range").slider("values", 0)
-        let max = $("#slider-range").slider("values", 1)
-        let v = 0;
-        let restaurantsFilter = [];
-        deleteMarkers()
-
-        for (let i = 0; i < data.length; i++) {
-            if (min <= data[i].rating && data[i].rating <= max) {
-                restaurantsFilter[v] = data[i];
-                v = v + 1
-            }
-
-        }
-        console.log(restaurantsFilter)
-        showRestaurants(restaurantsFilter)
-    }
-
-    $("#slider-range").slider({
-        change: changeNote
-    })
-
 }
 
 // function getImage(data) {
