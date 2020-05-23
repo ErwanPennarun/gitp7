@@ -292,7 +292,6 @@ function initMap() {
 function restaurantToArray(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     for (let i = 0; i < 10; i++) {
-      console.log(results)
       let newRestaurant = {};
       newRestaurant.name = results[i].name;
       newRestaurant.photo = results[i].photos[0].getUrl();
@@ -317,7 +316,6 @@ function restaurantToArray(results, status) {
             newRestaurant.reviews.push(review)
           }
           restaurants.push(newRestaurant)
-          console.log(restaurants)
           showRestaurants(restaurants)
         }
 
@@ -326,33 +324,6 @@ function restaurantToArray(results, status) {
   }}
 
 
-
-
-
-
-function createMarker(place) {
-
-  let latLng = new google.maps.LatLng(place.lat, place.long)
-  var marker = new google.maps.Marker({
-    map: map,
-    icon: {
-      url: 'http://maps.gstatic.com/mapfiles/circle.png',
-      anchor: new google.maps.Point(10, 10),
-      scaledSize: new google.maps.Size(17, 31)
-    },
-    position: latLng,
-    title: place.name
-  });
-  markers.push(marker)
-  marker.addListener('click', function () {
-    // let request = {
-    //   placeId: place.place_id,
-    //   fields: ['name', 'reviews', 'photos', 'rating', 'user_ratings_total', 'vicinity']
-    // };
-    // service.getDetails(request, getReviews)
-    showModal(restaurants, i)
-  })
-}
 
 
 // Try HTML5 geolocation.
