@@ -232,6 +232,7 @@ function initMap() {
     };
 
     service.nearbySearch(request, restaurantToArray);
+    // checkPosition()
   });
 
   if (navigator.geolocation) {
@@ -252,46 +253,29 @@ function initMap() {
   }
 }
 
-// function retour(results, status) {
-//   if (status === google.maps.places.PlacesServiceStatus.OK) {
-//     restaurants.length = 0;
-//     deleteMarkers()
-//     for (let i = 0; i < results.length; i++) {
-//       createMarker
-//       let request = {
-//         placeId: results[i].place_id,
-//         fields: ['name', 'reviews', 'photos', 'rating', 'user_ratings_total', 'vicinity', 'geometry']
-//       }
-//       service.getDetails(request, function (place, status) {
-//         if (status === google.maps.places.PlacesServiceStatus.OK) {
-//           restaurants.push(place)
-//           console.log(restaurants)
-//           showRestaurants(restaurants)
-//         }
-//       })
-//     }
-//   }
-// }
+function checkPosition() {
+  let adjacent = false;
+  if (userrestaurant.length != 0) {
 
-// function retour(results, status) {
-//   restaurants.length = 0;
-//   if (status === google.maps.places.PlacesServiceStatus.OK) {
-//     deleteMarkers()
-//     results.forEach(createMarker);
-//     console.log(results)
-//     results.forEach(function (e) {
-//       restaurants.push(e)
-//     })
-//     showRestaurants(restaurants)
-//   }
+    let pos = map.getCenter();
+    let centerLatLng = new google.maps.LatLng(pos.lat(), pos.lng())
 
-// }
+    for (let i = 0; i < userrestaurant.length; i++) {
+      let restaurantLatLng = new google.maps.LatLng(userrestaurant[i].lat, userrestaurant[i].long)
+      if ((google.maps.geometry.spherical.computeDistanceBetween(centerLatLng, restaurantLatLng)) < 2000) {
+        adjacent = true
+      }
+    }
+    return adjacent
+  }
 
-
+}
 
 function restaurantToArray(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
-    for (let i = 0; i < 10; i++) {
+    restaurants.length = 0
+    deleteMarkers()
+    for (let i = 0; i < 15; i++) {
       let newRestaurant = {};
       newRestaurant.name = results[i].name;
       newRestaurant.photo = results[i].photos[0].getUrl();
@@ -303,25 +287,44 @@ function restaurantToArray(results, status) {
 
       let request = {
         placeId: results[i].place_id,
-        fields: ['reviews']
+        fields: ['reviews', 'formatted_phone_number', 'formatted_address']
       }
 
       service.getDetails(request, function (place, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           var reviews = place.reviews
-          for (let i=0; i<reviews.length; i++) {
+          newRestaurant.phone = place.formatted_phone_number
+          newRestaurant.full_address = place.formatted_address
+
+
+          for (let i = 0; i < reviews.length; i++) {
             var review = {}
+            review.author = reviews[i].author_name
             review.stars = reviews[i].rating
             review.comment = reviews[i].text
+            review.time = reviews[i].time
             newRestaurant.reviews.push(review)
           }
-          restaurants.push(newRestaurant)
-          showRestaurants(restaurants)
-        }
 
+          var existingRestaurant = false
+
+          restaurants.forEach(function (resultat) {
+            if (resultat.lat == newRestaurant.lat && resultat.long == newRestaurant.long) {
+              existingRestaurant = true;
+            }
+          })
+
+          if (existingRestaurant == false) {
+            restaurants.push(newRestaurant)
+          }
+          showRestaurants(restaurants)
+
+
+        }
       })
     }
-  }}
+  }
+}
 
 
 

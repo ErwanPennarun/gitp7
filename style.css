@@ -106,8 +106,7 @@ a.link-resto {
 }
 
 .img-resto-modal {
-  height: 70%;
-  width: 70%;
+  max-height: 300px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -131,7 +130,7 @@ a.link-resto {
 
 .title {
   font-size: 18px;
-  color: hsl(348, 100%, 61%)
+  color: #ff3860
 }
 
 .adress {
@@ -186,7 +185,7 @@ a.link-resto {
   background-color: black;
 }
 
-.stars-back {
+.stars-back, .balls-back {
   display: inline-block;
   position: relative;
   font-family: 'Font Awesome 5 Free';
@@ -194,11 +193,12 @@ a.link-resto {
 
 }
 
-.stars-back::before {
-  content: "\f005 \f005 \f005 \f005 \f005";
+.stars-back::before, .balls-back::before {
+  content: "\f111 \f111 \f111 \f111 \f111";
+  color: hsl(348, 100%, 61%)
 }
 
-.stars-front {
+.stars-front, .balls-front {
   position: absolute;
   top: 0;
   left: 0;
@@ -207,9 +207,9 @@ a.link-resto {
   width: 0;
 }
 
-.stars-front::before {
-  content: "\f005 \f005 \f005 \f005 \f005";
-  color: black;
+.stars-front::before, .balls-front::before {
+  content: "\f111 \f111 \f111 \f111 \f111";
+  color: hsl(348, 100%, 61%);
   font-weight: 900;
 
 }
@@ -223,4 +223,18 @@ a.link-resto {
   font-size: 20px;
   font-weight: 600;
   color: hsl(348, 100%, 61%)
+}
+
+.modal {
+  min-width: 60%;
+}
+
+.phone-modal, .addresse-modal {
+  margin : 10px;
+}
+
+.truncate {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }

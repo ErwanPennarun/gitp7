@@ -1,21 +1,18 @@
 let restaurants = new Array();
+let userrestaurant = new Array();
 let markers = new Array();
-let arrReviews = new Array();
 let min = $("#slider-range").slider("values", 0)
 let max = $("#slider-range").slider("values", 1)
 let note
 let comment
 let avisArray = [];
-let avisTot = null
-let avisTotaux = []
 let newRestaurant = {};
 let lat
 let long
-let restobje = new Array()
 
-// ajaxGet("listerestaurants.json", function (response) {
-//     restaurants = JSON.parse(response);
-// });
+ajaxGet("listerestaurants.json", function (response) {
+    userrestaurant = JSON.parse(response);
+});
 
 function setMapOnAll(map) {
     for (let i = 0; i < markers.length; i++) {
@@ -32,30 +29,8 @@ function deleteMarkers() {
     markers = [];
 }
 
-
-
-
-// function codeAddress(addressVal, callback) {
-//     geocoder = new google.maps.Geocoder();
-//     // let addressVal = $('#restaurant-address').val();
-//     geocoder.geocode({
-//         'address': addressVal
-//     }, function (results, status) {
-//         if (status == google.maps.GeocoderStatus.OK) {
-//             lat = results[0].geometry.location.lat();
-//             console.log(lat)
-//             long = results[0].geometry.location.lng();
-//             callback(lat, long)
-//         } else {
-//             alert("Geocode was not successful for the following reason: " + status);
-//         }
-
-//     });
-// }
-
 function codeAddress(addressVal) {
     geocoder = new google.maps.Geocoder();
-    // let addressVal = $('#restaurant-address').val();
     return new Promise(function (resolve, reject) {
         geocoder.geocode({
             'address': addressVal
@@ -74,83 +49,63 @@ function codeAddress(addressVal) {
 function addNewRestaurant(data) {
     let name = $('#restaurant-name').val();
     let address = $('#restaurant-address').val()
+    let phone = $('#restaurant-phone').val()
     codeAddress(address).then(function () {
         let newRestaurant = {
             name: name,
             vicinity: address,
+            phone: phone,
+            full_address: address,
             lat: lat,
-            photo: `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${lat},${long}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`,
             long: long,
+            photo: `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${lat},${long}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`,
             prices: "",
             rating: "Non noté",
             reviews: []
         }
-        console.log(newRestaurant)
+
         data.push(newRestaurant)
         showRestaurants(restaurants)
 
     })
-
-    console.log(restaurants)
-
 }
 
-function updateModal(data, i) {
+
+
+function addComment(data, i) {
 
     $('.submitcomment').unbind('click').bind('click', function () {
-        let note = JSON.parse($('#note-avis').val());
+        let note = parseInt($('input[name=note]:checked', '#notation').val())
         let comment = $('#comment-avis').val();
+        let author = $('#comment-author').val()
+        let d = new Date();
+        let n = d.getTime()
         let newRating = {
+            author: author,
             stars: note,
-            comment: comment
+            comment: comment,
+            time: n
         }
-        restaurants[i].reviews.splice(0, 0, newRating)
+        data[i].reviews.splice(0, 0, newRating)
         console.log(restaurants[i])
         $('#modalComment').html(`${getComments(data[i].reviews)}<hr />`)
-        $('.stars-front').css("width", transformStars(data, i));
+        $('.stars-front').css("width", transformBalls(getAverage(data[i].reviews)));
         showRestaurants(data)
 
     })
 }
 
 function showModal(data, i) {
-
+    let rating = getAverage(data[i].reviews)
     $('#modalTitle').html(`${data[i].name}`);
-    if (data[i].rating != "Non noté") {
-        $('.stars-front').css("width", transformStars(data, i));
-    } else {
-        $('.modal-moyenne').html(`Pas encore d'avis laissé`)
-    }
-
-    $('#modalComment').html(`${getComments(data[i].reviews)}<hr />`)
+    $('.addresse-modal').html(`${data[i].full_address}`)
+    $('.phone-modal').html(`${data[i].phone}`)
+    $('.stars-front').css("width", transformBalls(rating));
+    $('#modalComment').html(`${getComments(data[i].reviews)}`)
     $('#modalImage').html(`<img src="${data[i].photo}" class="img-resto-modal">`)
-    updateModal(data, i)
+    addComment(data, i)
 
 }
-
-
-// function createMarkers(data) {
-
-//     for (let i = 0; i < data.length; i++) {
-//         let myLatLng = new google.maps.LatLng(data[i].lat, data[i].long);
-
-//         let marker = new google.maps.Marker({
-//             position: myLatLng,
-//             animation: google.maps.Animation.DROP,
-//             map: map,
-//             visible: true,
-//             title: data[i].restaurantName
-//         });
-
-//         marker.addListener('click', function () {
-//             showModal(data, i)
-//             $('#restoModal').modal('show')
-//         })
-//         markers.push(marker)
-
-//     }
-// }
-
 
 function createMarker(data) {
 
@@ -159,11 +114,12 @@ function createMarker(data) {
         var marker = new google.maps.Marker({
             map: map,
             icon: {
-                url: 'http://maps.gstatic.com/mapfiles/circle.png',
+                url: 'img/pin.png',
                 anchor: new google.maps.Point(10, 10),
-                scaledSize: new google.maps.Size(17, 31)
+                scaledSize: new google.maps.Size(40, 40)
             },
             position: latLng,
+            animation: google.maps.Animation.DROP,
             title: data[i].name
         });
         markers.push(marker)
@@ -176,62 +132,55 @@ function createMarker(data) {
     }
 }
 
-function filterRestaurants(data) {
-    function changeNote() {
-        let min = $("#slider-range").slider("values", 0)
-        let max = $("#slider-range").slider("values", 1)
-        let v = 0;
-        let restaurantsFilter = [];
-        deleteMarkers()
+function changeNote() {
 
-        for (let i = 0; i < data.length; i++) {
-            if (min <= data[i].rating && data[i].rating <= max) {
-                restaurantsFilter[v] = data[i];
-                v = v + 1
-            }
+    var data = restaurants
+    let min = $("#slider-range").slider("values", 0)
+    let max = $("#slider-range").slider("values", 1)
+    deleteMarkers()
+    let filteredRestaurants = filterRestaurants(data, min, max)
+    showRestaurants(filteredRestaurants)
+}
 
+
+
+
+function filterRestaurants(data, min, max) {
+
+    let restaurantsFilter = [];
+    let v = 0;
+
+    for (let i = 0; i < data.length; i++) {
+        if (min <= data[i].rating && data[i].rating <= max) {
+            restaurantsFilter[v] = data[i];
+            v = v + 1
         }
-        console.log(restaurantsFilter)
-        showRestaurants(restaurantsFilter)
     }
 
-    $("#slider-range").slider({
-        change: changeNote
-    })
+    return restaurantsFilter
 
 }
 
-// function getImage(data) {
+function findDay(time) {
+    let d = new Date(time * 1000)
+    console.log(d)
+    let day = d.getDate()
+    let month = d.getMonth() + 1
+    let year = d.getFullYear()
+    let date = `${day}/${month}/${year}`
 
-//     let visualArray = [];
-
-//     for (let i = 0; i < data.length; i++) {
-//         if (isNaN(lat) && isNaN(long)) {
-//             let lat = data[i].geometry.location.lat()
-//             let long = data[i].geometry.location.lng()
-//             let photo = `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${lat},${long}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`
-//             restaurants[i].picture.push(photo)
-
-//         } else {
-
-//             let lat = data[i].lat;
-//             let long = data[i].long
-//             let photo = `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${lat},${long}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`
-//             restaurants[i].picture.push(photo)
-//         }
-
-
-//     }
-//     return 
-// }
-
+    return date
+}
 
 function getComments(data) {
     let avisArray = []
     let avis = ""
 
     for (let i = 0; i < data.length; i++) {
-        avisArray.push(`${data[i].stars} - ${data[i].comment}<br /><hr />`)
+
+        let note = `<div class="balls-back"><div class="balls-front" style="width:${transformBalls(data[i].stars)}"></div></div>`
+        let date = findDay(data[i].time)
+        avisArray.push(`${note} - Avis de <b>${data[i].author}</b> le ${date}<br />${truncate(data[i].comment)}<hr />`)
         avis = avisArray.join("")
     }
 
@@ -248,26 +197,37 @@ function getAverage(data) {
     return rounded = +(avg.toFixed(1))
 }
 
-function transformStars(data, i) {
+// function transformStars(data, i) {
 
-    let ratings = data[i].rating;
-    // let ratings = getAverage(data[i].ratings);
-    let percentage = (ratings / 5) * 100;
-    let percentageRounded = `${(Math.round(percentage / 10) * 10)}%`;
-    console.log(percentageRounded)
-    return percentageRounded
+//     let ratings = getAverage(data[i].reviews);
+//     let percentage = `${Math.round((ratings / 5) * 100)}%`
+//     console.log(percentage)
+//     return percentage
+// }
+
+function transformBalls(rating) {
+    let percentage = `${Math.round((rating / 5) * 100)}%`
+    return percentage
 }
-
 
 
 function showRestaurants(data) {
     $("#zone-resto").html('')
+    if (checkPosition()) {
+
+        for (let y = 0; y < userrestaurant.length; y++) {
+            var index = data.findIndex(x => x.name == userrestaurant[y].name)
+            if (index === -1) {
+                data = data.concat(userrestaurant[y])
+            }
+        }
+    }
     createMarker(data)
-    console.log(restaurants[1])
+
 
     for (let i = 0; i < data.length; i++) {
 
-        let average = data[i].rating
+        let average = getAverage(data[i].reviews)
         if (isNaN(average)) {
             average = "Non noté"
         }
@@ -284,34 +244,27 @@ function showRestaurants(data) {
             showModal(data, i);
             $('#restoModal').modal('show')
 
-
-
         })
     }
 }
 
-// function getReviews(place, status) {
-//     arrReviews.length = 0
-//     if (status === google.maps.places.PlacesServiceStatus.OK) {
+function truncate(input) {
 
-//         reviews = place.reviews
-//         image = place.photos[0].getUrl()
+    if (input.length > 200) {
+        let text = input
+        let v = `${input.substring(0, 200)}...`
+        let html = `<div class="truncate-text" style="display:block">${v}<a href="#" class="moreless">Lire la suite</a></div>
+        <div class="full-text" style="display:none">${text}<a href="#" class="moreless">Lire moins</a></div>`
 
-//         for (let [key, value] of Object.entries(place)) {
-//             console.log(`${key}: ${value}`)
-//         }
+        return html
+    } else {
+        return input;
+    }
+};
 
-//         reviews.forEach(function (e) {
-//             arrReviews.push(e)
-//         })
-//         // let restobj = Object.keys(place).map(key => place[key])
-
-//         // console.log(restobj)
-//         console.log(arrReviews)
-//         showModal(place)
-//         $('#restoModal').modal('show')
-//     }
-
-
-
-// }
+$(document).ready(function () {
+    $('a.moreless').on("click", function (e) {
+        e.preventDefault()
+        alert("poeut")
+    })
+})

@@ -19,7 +19,7 @@
   <script src="jquery-ui.js"></script>
   <script src="https://kit.fontawesome.com/1651543c1a.js" crossorigin="anonymous"></script>
   <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0&callback=initMap&libraries=places"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0&callback=initMap&libraries=places,geometry"
     type="text/javascript"></script>
 
 
@@ -33,9 +33,9 @@
 
 <body>
   <div class="top-bar"><span class="is-center title-resto">Restaurants</span>
-      <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
-        onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
-    </div>
+    <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
+      onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
+  </div>
   </div>
 
 
@@ -52,79 +52,89 @@
 
 
 
-
-
-
-
       <!-- MODALS -->
       <!-- AFFICHAGE RESTAURANTS -->
 
       <div id="restoModal" class="modal">
         <h3 id="modalTitle" class="modal-title"></h3>
-        <hr />
-        <div class="modal-image" id="modalImage"></div>
-        <hr />
-        <div class="modal-body" id="modalText">
-          <div class="modal-moyenne" id="modalMoyenne"><span>Moyenne des évaluations</span> :
-            <div class="stars-back">
-              <div class="stars-front"></div>
-            </div>
+
+        <div class="modal-moyenne" id="modalMoyenne">
+          <div class="stars-back">
+            <div class="stars-front"></div>
           </div>
+          <div><span> <i class="fas fa-map-marker-alt"></i><span class="addresse-modal"></span>
+            </span> - <span> <i class="fas fa-phone"></i><span class="phone-modal"></span>
+            </span></div>
+        </div><br>
+        <div class="modal-image" id="modalImage"></div>
+        <div class="modal-body" id="modalText">
           <hr />
+          <div class="modal-content">
+            <div class="modal-comment" id="modalComment"></div>
+          </div>
         </div>
-        <div class="modal-comment" id="modalComment"></div>
         <div class="buttons is-right">
           <a href='#' class="button is-danger" rel="modal:close" id="close-modal">Fermer</a>
           <a href='#ajout-commentaire' class="button is-success" rel="modal:open">Ajouter un avis</a>
         </div>
       </div>
-
-      <!-- FORMULAIRE AVIS -->
-
-      <form id="ajout-commentaire" class="modal" action="" method="post">
-        <h3 id="modalTitle2" class="modal-title"></h3>
-        <hr />
-        <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label class="label">Note</label>
-          </div>
-          <div class="field-body">
-            <div class="field is-narrow">
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select name="note" id="note-avis">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="field is-horizontal">
-          <div class="field-label is-normal">
-            <label class="label">Avis</label>
-          </div>
-          <div class="field-body">
-            <div class="field">
-              <div class="control">
-                <textarea class="textarea" placeholder="Donnez votre avis sur le restaurant" name="commentaire"
-                  id="comment-avis"></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <a href="#restoModal" type="submit" rel="modal:open"
-          class="button is-danger is-pulled-right submitcomment">Envoyer avis</a>
-      </form>
-
-      <!-- FORMULAIRE AJOUT RESTAURANT -->
     </div>
+
+
+    <!-- FORMULAIRE AVIS -->
+
+    <form id="ajout-commentaire" class="modal" action="" method="post">
+      <h3 id="modalTitle2" class="modal-title"></h3>
+      <hr />
+      <div class="field">
+        <label class="label">Note</label>
+        <div class="field-body">
+          <div class="field is-narrow">
+            <div class="control" id="notation">
+              <label class="radio"><input type="radio" name="note" value="0">0</label>
+              <label class="radio"><input type="radio" name="note" value="1">1</label>
+              <label class="radio"><input type="radio" name="note" value="2">2</label>
+              <label class="radio"><input type="radio" name="note" value="3">3</label>
+              <label class="radio"><input type="radio" name="note" value="4">4</label>
+              <label class="radio"><input type="radio" name="note" value="5">5</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+
+        <label class="label">Votre nom</label>
+
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <input class="input" placeholder="Indiquez votre nom" name="author" id="comment-author"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+
+        <label class="label">Avis</label>
+
+        <div class="field-body">
+          <div class="field">
+            <div class="control">
+              <textarea class="textarea" placeholder="Donnez votre avis sur le restaurant" name="commentaire"
+                id="comment-avis"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a href="#restoModal" type="submit" rel="modal:open"
+        class="button is-danger is-pulled-right submitcomment">Envoyer
+        avis</a>
+    </form>
+
+    <!-- FORMULAIRE AJOUT RESTAURANT -->
     <div class="add-restaurant" id="add-resto-div" style=>
+
       <form id="submitRestaurant">
         <div class="modal-title is-danger">
           <h3>Ajouter votre propre restaurant à la carte</h3>
@@ -138,12 +148,21 @@
         <div class="field">
           <label class="label">Adresse</label>
           <p class="control has-icons-left">
-            <input class="input is-danger" type="text" placeholder="Rentrer l'adresse de votre restaurant"
-              id="restaurant-address">
+            <input class="input is-danger" type="text" placeholder="Adresse du restaurant" id="restaurant-address">
             <span class="icon is-small is-left">
               <i class="fas fa-map-marker-alt"></i>
             </span></p>
+
           <p class="help">Vous pouvez également cliquer sur la carte pour obtenir l'adresse</p>
+        </div>
+        <div class="field">
+          <label class="label">Téléphone</label>
+          <p class="control has-icons-left">
+            <input class="input" type="text" placeholder="Numéro de téléphone" id="restaurant-phone">
+            <span class="icon is-small is-left">
+              <i class="fas fa-phone"></i>
+            </span></p>
+
         </div>
         <div class="has-text-centered" style="margin-top:20px">
           <a href="#submitRestaurant" id="submit-restaurant" value="Reset input"
@@ -153,23 +172,22 @@
 
       </form>
     </div>
-
   </div>
-  </div>
-
-
 
 </body>
 
 <script>
   $(function () {
-
+    $('a.more').on("click", function(){
+            alert("prout")
+        })     
     $('#submit-restaurant').on('click', function () {
-      addNewRestaurant(restaurants);
+      addNewRestaurant(userrestaurant);
       $('.bloc-resto').fadeIn();
       $('.add-restaurant').fadeOut();
       $('#submitRestaurant')[0].reset()
     })
+
     $("#slider-range").slider({
       range: true,
       min: 0,
@@ -179,43 +197,20 @@
         $("#amount").val(ui.values[0] + " - " + ui.values[1]);
       }
     });
+
     $("#amount").val($("#slider-range").slider("values", 0) + " - " + $("#slider-range").slider(
       "values", 1));
-    // showRestaurants(restaurants)
-    filterRestaurants(restaurants)
 
+    changeNote()
+   
+      $("#slider-range").slider({
+      change: changeNote
+    })
 
   })
+  
+
+       
 </script>
 
 </html>
-
-
-<!-- 
-      <div class="modal fade" id="restoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalTitle"></h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body" id="modalText">
-              <div class="modal-moyenne" id="modalMoyenne"><span>Moyenne des évaluations</span> :
-                <div class="stars-back">
-                  <div class="stars-front"></div>
-                </div>
-
-              </div>
-            </div>
-            <div class="modal-comment" id="modalComment"></div>
-            <div class="modal-footer">
-              <a href="#myModal1" role="button" class="btn btn-default" data-dismiss="modal">Launch demo modal</a>  
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <a href="#restoModal" rel="modal:open">Allo</a> -->
