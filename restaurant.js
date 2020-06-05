@@ -3,12 +3,12 @@ let userrestaurant = new Array();
 let markers = new Array();
 let min = $("#slider-range").slider("values", 0)
 let max = $("#slider-range").slider("values", 1)
-let note
-let comment
+// let note
+// let comment
 let avisArray = [];
 let newRestaurant = {};
-let lat
-let long
+// let lat
+// let long
 
 ajaxGet("listerestaurants.json", function (response) {
     userrestaurant = JSON.parse(response);
@@ -58,8 +58,8 @@ function addNewRestaurant(data) {
             full_address: address,
             lat: lat,
             long: long,
+            origin: "User",
             photo: `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${lat},${long}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`,
-            prices: "",
             rating: "Non noté",
             reviews: []
         }
@@ -78,16 +78,15 @@ function addComment(data, i) {
         let note = parseInt($('input[name=note]:checked', '#notation').val())
         let comment = $('#comment-avis').val();
         let author = $('#comment-author').val()
-        let d = new Date();
-        let n = d.getTime()
+        let d = Date.now();
+        let t = Math.floor(d / 1000)
         let newRating = {
             author: author,
             stars: note,
             comment: comment,
-            time: n
+            time: t
         }
         data[i].reviews.splice(0, 0, newRating)
-        console.log(restaurants[i])
         $('#modalComment').html(`${getComments(data[i].reviews)}<hr />`)
         $('.stars-front').css("width", transformBalls(getAverage(data[i].reviews)));
         showRestaurants(data)
@@ -100,6 +99,9 @@ function showModal(data, i) {
     $('#modalTitle').html(`${data[i].name}`);
     $('.addresse-modal').html(`${data[i].full_address}`)
     $('.phone-modal').html(`${data[i].phone}`)
+    if (isNaN(rating)) {
+        $('.stars-front').css("width", 0);
+    }
     $('.stars-front').css("width", transformBalls(rating));
     $('#modalComment').html(`${getComments(data[i].reviews)}`)
     $('#modalImage').html(`<img src="${data[i].photo}" class="img-resto-modal">`)
@@ -110,11 +112,17 @@ function showModal(data, i) {
 function createMarker(data) {
 
     for (let i = 0; i < data.length; i++) {
+
+        if (data[i].origin === "User") {
+            url = 'img/seo-and-web.png'
+        } else {
+            url = 'img/pin.png'
+        }
         var latLng = new google.maps.LatLng(data[i].lat, data[i].long)
         var marker = new google.maps.Marker({
             map: map,
             icon: {
-                url: 'img/pin.png',
+                url: url,
                 anchor: new google.maps.Point(10, 10),
                 scaledSize: new google.maps.Size(40, 40)
             },
@@ -127,18 +135,18 @@ function createMarker(data) {
             showModal(restaurants, i)
             $('#restoModal').modal('show')
 
-
         })
     }
 }
 
 function changeNote() {
 
-    var data = restaurants
+    let data = restaurants
     let min = $("#slider-range").slider("values", 0)
     let max = $("#slider-range").slider("values", 1)
     deleteMarkers()
     let filteredRestaurants = filterRestaurants(data, min, max)
+    console.log(filteredRestaurants)
     showRestaurants(filteredRestaurants)
 }
 
@@ -151,7 +159,7 @@ function filterRestaurants(data, min, max) {
     let v = 0;
 
     for (let i = 0; i < data.length; i++) {
-        if (min <= data[i].rating && data[i].rating <= max) {
+        if (min <= getAverage(data[i].reviews) && getAverage(data[i].reviews) <= max) {
             restaurantsFilter[v] = data[i];
             v = v + 1
         }
@@ -163,7 +171,6 @@ function filterRestaurants(data, min, max) {
 
 function findDay(time) {
     let d = new Date(time * 1000)
-    console.log(d)
     let day = d.getDate()
     let month = d.getMonth() + 1
     let year = d.getFullYear()
@@ -172,15 +179,15 @@ function findDay(time) {
     return date
 }
 
-function getComments(data) {
+function getComments(reviews) {
     let avisArray = []
     let avis = ""
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < reviews.length; i++) {
 
-        let note = `<div class="balls-back"><div class="balls-front" style="width:${transformBalls(data[i].stars)}"></div></div>`
-        let date = findDay(data[i].time)
-        avisArray.push(`${note} - Avis de <b>${data[i].author}</b> le ${date}<br />${truncate(data[i].comment)}<hr />`)
+        let note = `<div class="balls-back"><div class="balls-front" style="width:${transformBalls(reviews[i].stars)}"></div></div>`
+        let date = findDay(reviews[i].time)
+        avisArray.push(`${note} - Avis de <b>${reviews[i].author}</b> le ${date}<br />${truncate(reviews[i].comment)}<hr />`)
         avis = avisArray.join("")
     }
 
@@ -197,16 +204,9 @@ function getAverage(data) {
     return rounded = +(avg.toFixed(1))
 }
 
-// function transformStars(data, i) {
-
-//     let ratings = getAverage(data[i].reviews);
-//     let percentage = `${Math.round((ratings / 5) * 100)}%`
-//     console.log(percentage)
-//     return percentage
-// }
-
 function transformBalls(rating) {
     let percentage = `${Math.round((rating / 5) * 100)}%`
+
     return percentage
 }
 
@@ -216,9 +216,9 @@ function showRestaurants(data) {
     if (checkPosition()) {
 
         for (let y = 0; y < userrestaurant.length; y++) {
-            var index = data.findIndex(x => x.name == userrestaurant[y].name)
+            var index = restaurants.findIndex(x => x.name == userrestaurant[y].name)
             if (index === -1) {
-                data = data.concat(userrestaurant[y])
+                restaurants = restaurants.concat(userrestaurant[y])
             }
         }
     }
@@ -251,20 +251,18 @@ function showRestaurants(data) {
 function truncate(input) {
 
     if (input.length > 200) {
+        let truncated = `${input.substring(0, 200)}...`
         let text = input
-        let v = `${input.substring(0, 200)}...`
-        let html = `<div class="truncate-text" style="display:block">${v}<a href="#" class="moreless">Lire la suite</a></div>
-        <div class="full-text" style="display:none">${text}<a href="#" class="moreless">Lire moins</a></div>`
+        var html = `
+        <div class="truncate-text" style="display:block">${truncated}
+            <a href="#" class="moreless more">Lire la suite</a>
+        </div>
+        <div class="full-text" style="display:none">${text}
+            <a href="#" class="moreless less">Lire moins</a>
+        </div>`
 
         return html
     } else {
         return input;
     }
 };
-
-$(document).ready(function () {
-    $('a.moreless').on("click", function (e) {
-        e.preventDefault()
-        alert("poeut")
-    })
-})

@@ -211,11 +211,20 @@ function initMap() {
 
   map = new google.maps.Map(document.getElementById('map'), {
     center: {
-      lat: 38.38648,
+      lat: 8.38648,
       lng: -4.4931
     },
     zoom: 14,
     styles: mapStyles
+  });
+
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function () {
+    searchBox.setBounds(map.getBounds());
   });
 
   geocoder = new google.maps.Geocoder;
@@ -225,6 +234,7 @@ function initMap() {
 
   google.maps.event.addListener(map, 'idle', function () {
     let bounds = map.getBounds();
+    
 
     var request = {
       bounds: bounds,
@@ -232,7 +242,6 @@ function initMap() {
     };
 
     service.nearbySearch(request, restaurantToArray);
-    // checkPosition()
   });
 
   if (navigator.geolocation) {
@@ -252,6 +261,18 @@ function initMap() {
     handleLocationError(false, infoWindow, map.getCenter());
   }
 }
+
+// Try HTML5 geolocation.
+
+
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(browserHasGeolocation ?
+    'Error: The Geolocation service failed.' :
+    'Error: Your browser doesn\'t support geolocation.');
+  infoWindow.open(map);
+}
+
 
 function checkPosition() {
   let adjacent = false;
@@ -274,16 +295,24 @@ function checkPosition() {
 function restaurantToArray(results, status) {
   if (status === google.maps.places.PlacesServiceStatus.OK) {
     restaurants.length = 0
+    console.log(results)
+
     deleteMarkers()
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < results.length; i++) {
       let newRestaurant = {};
       newRestaurant.name = results[i].name;
-      newRestaurant.photo = results[i].photos[0].getUrl();
+      if (results[i].photos == undefined) {
+        newRestaurant.photo = `https://maps.googleapis.com/maps/api/streetview?size=450x300&location=${results[i].geometry.location.lat()},${results[i].geometry.location.lng()}&fov=90&heading=235&pitch=10&key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0`
+
+      } else {
+        newRestaurant.photo = results[i].photos[0].getUrl()
+      }
       newRestaurant.rating = results[i].rating;
       newRestaurant.vicinity = results[i].vicinity;
       newRestaurant.lat = results[i].geometry.location.lat();
       newRestaurant.long = results[i].geometry.location.lng();
       newRestaurant.reviews = [];
+      newRestaurant.origin = "Google"
 
       let request = {
         placeId: results[i].place_id,
@@ -292,6 +321,7 @@ function restaurantToArray(results, status) {
 
       service.getDetails(request, function (place, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
+
           var reviews = place.reviews
           newRestaurant.phone = place.formatted_phone_number
           newRestaurant.full_address = place.formatted_address
@@ -305,39 +335,18 @@ function restaurantToArray(results, status) {
             review.time = reviews[i].time
             newRestaurant.reviews.push(review)
           }
-
-          var existingRestaurant = false
-
-          restaurants.forEach(function (resultat) {
-            if (resultat.lat == newRestaurant.lat && resultat.long == newRestaurant.long) {
-              existingRestaurant = true;
-            }
-          })
-
-          if (existingRestaurant == false) {
-            restaurants.push(newRestaurant)
-          }
+          restaurants.push(newRestaurant)
+          changeNote()
+          // filterRestaurants(restaurants, min, max)
           showRestaurants(restaurants)
 
 
         }
-      })
+      }
+      )
     }
+
   }
-}
-
-
-
-
-// Try HTML5 geolocation.
-
-
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-  infoWindow.setPosition(pos);
-  infoWindow.setContent(browserHasGeolocation ?
-    'Error: The Geolocation service failed.' :
-    'Error: Your browser doesn\'t support geolocation.');
-  infoWindow.open(map);
 }
 
 

@@ -38,6 +38,7 @@
   </div>
   </div>
 
+  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
 
   <div class="bloc-body">
     <div id="map" class="bloc-map"></div>
@@ -178,9 +179,17 @@
 
 <script>
   $(function () {
-    $('a.more').on("click", function(){
-            alert("prout")
-        })     
+    $('#modalComment').on('click', 'a.more', function () {
+      $(this).parent().hide()
+      $(this).parent().next().show()
+    })
+
+    $('#modalComment').on('click', 'a.less', function () {
+      $(this).parent().hide()
+      $(this).parent().prev().show()
+      
+    })
+
     $('#submit-restaurant').on('click', function () {
       addNewRestaurant(userrestaurant);
       $('.bloc-resto').fadeIn();
@@ -202,15 +211,12 @@
       "values", 1));
 
     changeNote()
-   
-      $("#slider-range").slider({
+
+    $("#slider-range").slider({
       change: changeNote
     })
 
   })
-  
-
-       
 </script>
 
 </html>
