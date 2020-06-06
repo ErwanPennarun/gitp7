@@ -215,17 +215,12 @@ function initMap() {
       lng: -4.4931
     },
     zoom: 14,
-    styles: mapStyles
+    styles: mapStyles,
+    disableDefaultUI: true
+
   });
 
-  var input = document.getElementById('pac-input');
-  var searchBox = new google.maps.places.SearchBox(input);
-  map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
-  // Bias the SearchBox results towards current map's viewport.
-  map.addListener('bounds_changed', function () {
-    searchBox.setBounds(map.getBounds());
-  });
 
   geocoder = new google.maps.Geocoder;
   infoWindow = new google.maps.InfoWindow;
@@ -234,8 +229,6 @@ function initMap() {
 
   google.maps.event.addListener(map, 'idle', function () {
     let bounds = map.getBounds();
-    
-
     var request = {
       bounds: bounds,
       type: ['restaurant']
@@ -260,6 +253,33 @@ function initMap() {
     // Browser doesn't support Geolocation
     handleLocationError(false, infoWindow, map.getCenter());
   }
+
+
+
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  console.log(input)
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+  
+  searchBox.addListener('places_changed', function () {
+    var places = searchBox.getPlaces();
+
+    if (places.length == 0) {
+        return;
+    }
+
+    var bounds = new google.maps.LatLngBounds();
+    places.forEach(function (place) {
+       
+        if (place.geometry.viewport) {
+            // Only geocodes have viewport.
+            bounds.union(place.geometry.viewport);
+        } else {
+            bounds.extend(place.geometry.location);
+        }
+    });
+    map.fitBounds(bounds);
+});
 }
 
 // Try HTML5 geolocation.
@@ -318,37 +338,60 @@ function restaurantToArray(results, status) {
         placeId: results[i].place_id,
         fields: ['reviews', 'formatted_phone_number', 'formatted_address']
       }
+      getPlacesDetails(request, newRestaurant).then(function () {
+        // service.getDetails(request, function (place, status) {
+        //   if (status === google.maps.places.PlacesServiceStatus.OK) {
 
-      service.getDetails(request, function (place, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-
-          var reviews = place.reviews
-          newRestaurant.phone = place.formatted_phone_number
-          newRestaurant.full_address = place.formatted_address
-
-
-          for (let i = 0; i < reviews.length; i++) {
-            var review = {}
-            review.author = reviews[i].author_name
-            review.stars = reviews[i].rating
-            review.comment = reviews[i].text
-            review.time = reviews[i].time
-            newRestaurant.reviews.push(review)
-          }
-          restaurants.push(newRestaurant)
-          changeNote()
-          // filterRestaurants(restaurants, min, max)
-          showRestaurants(restaurants)
+        //     var reviews = place.reviews
+        //     newRestaurant.phone = place.formatted_phone_number
+        //     newRestaurant.full_address = place.formatted_address
 
 
-        }
-      }
-      )
+        //     for (let i = 0; i < reviews.length; i++) {
+        //       var review = {}
+        //       review.author = reviews[i].author_name
+        //       review.stars = reviews[i].rating
+        //       review.comment = reviews[i].text
+        //       review.time = reviews[i].time
+        //       newRestaurant.reviews.push(review)
+        //     }
+        restaurants.push(newRestaurant)
+        changeNote()
+        filterRestaurants(restaurants, min, max)
+        // showRestaurants(restaurants)
+
+      })
     }
-
   }
+  // )
 }
 
+//   }
+// }
+
+function getPlacesDetails(request, newRestaurant) {
+  return new Promise(function (resolve, reject) {
+    service.getDetails(request, function (place, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        var reviews = place.reviews
+        newRestaurant.phone = place.formatted_phone_number
+        newRestaurant.full_address = place.formatted_address
+
+
+        for (let i = 0; i < reviews.length; i++) {
+          var review = {}
+          review.author = reviews[i].author_name
+          review.stars = reviews[i].rating
+          review.comment = reviews[i].text
+          review.time = reviews[i].time
+          resolve(newRestaurant.reviews.push(review))
+        }
+      } else {
+        reject(status)
+      }
+    })
+  })
+}
 
 function getLatLng() {
 

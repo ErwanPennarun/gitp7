@@ -21,9 +21,6 @@
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZdsmvqyBOyyj3GaJUPrec-k0hQVeuJk0&callback=initMap&libraries=places,geometry"
     type="text/javascript"></script>
-
-
-
   <script src="ajax.js"></script>
   <script src="map.js"></script>
   <script src="restaurant.js"></script>
@@ -32,13 +29,13 @@
 </head>
 
 <body>
-  <div class="top-bar"><span class="is-center title-resto">Restaurants</span>
+  <div class="top-bar"><span class="title-resto">Restaurants</span>
     <a href="#submitRestaurant" class="button btn-add is-danger" id="add-resto"
       onclick="$('.bloc-resto').fadeOut(); $('.add-restaurant').fadeIn(); getLatLng();">Ajouter un restaurant</a>
   </div>
   </div>
 
-  <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+  <input id="pac-input" class="controls" type="text" placeholder="Chercher une localité">
 
   <div class="bloc-body">
     <div id="map" class="bloc-map"></div>
@@ -187,7 +184,7 @@
     $('#modalComment').on('click', 'a.less', function () {
       $(this).parent().hide()
       $(this).parent().prev().show()
-      
+
     })
 
     $('#submit-restaurant').on('click', function () {
